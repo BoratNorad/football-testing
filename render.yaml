@@ -1,0 +1,16 @@
+# Render "Blueprint": deploys Gridiron Dex as a free static site.
+# Render dashboard -> New -> Blueprint -> pick this repo.
+services:
+  - type: web
+    name: gridiron-dex
+    runtime: static
+    branch: claude/nice-hypatia-4zlumq
+    buildCommand: echo "static site, nothing to build"
+    staticPublishPath: .
+    headers:
+      - path: /manifest.webmanifest
+        name: Content-Type
+        value: application/manifest+json
+      - path: /js/*
+        name: Cache-Control
+        value: public, max-age=3600
