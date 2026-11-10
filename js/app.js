@@ -78,6 +78,7 @@
   const diff = (p, k) => { const v = p.stats[k]; return Array.isArray(v) ? v[1] : 0; };
   const pad = (n) => String(n).padStart(4, "0");
   const teamOf = (p) => D.teams[p.team] || { c1: "#555", c2: "#aaa", c3: "#999", name: p.team, abbr: p.team, nick: p.team };
+  const isNarrow = () => window.matchMedia("(max-width: 860px)").matches;
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
   function tierColor(v) {
@@ -182,7 +183,10 @@
     ov.className = "ov";
     ov.textContent = p.ovr;
     li.append(nm, ov);
-    li.onclick = () => select(p.id, false);
+    li.onclick = () => {
+      select(p.id, false);
+      if (isNarrow()) $("#detail").scrollIntoView({ behavior: "smooth", block: "start" });
+    };
     return li;
   }
 
@@ -576,6 +580,16 @@
         selectTeam(order[(i + (e.key === "ArrowRight" ? 1 : -1) + order.length) % order.length]);
       }
     });
+
+    // phones: floating "back to list" button once you've scrolled down to a player page
+    const back = $("#toList");
+    back.onclick = () => $(".list-screen").scrollIntoView({ behavior: "smooth", block: "start" });
+    const onScroll = () => {
+      const d = $("#detail").getBoundingClientRect();
+      back.classList.toggle("show", isNarrow() && state.view === "dex" && d.top < 80);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
 
     renderTeams();
     render();
