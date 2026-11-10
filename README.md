@@ -1,7 +1,7 @@
 # Gridiron Dex
 
 A Pokédex-style roster browser for **Madden NFL 27 ratings**, with retro pixel art,
-**16-bit portraits made from nflverse headshots**, per-team depth charts and an
+**16-bit portraits made from nflverse headshots** (face-cropped, 80×80, 40 colours), per-team depth charts and an
 original **passive/active ability system** where every ability has a pixel badge
 and an animated demo play. This is the base layer for a new football game.
 
@@ -13,7 +13,7 @@ No build step and no server needed. Open `index.html` in a browser.
 ### DEX
 Every player in the file (1,941). Filter by team, position or position group, search,
 sort, or show starters only (★). Each player page has:
-- a **16-bit pixel portrait** (64×64, about 40 colours) built from the nflverse headshot
+- a **16-bit pixel portrait** (80×80, 40 colours, cropped to the face) built from the nflverse headshot
 - a Pokémon-style type (PASSER, RUSHER, RECEIVER, WALL, RUSH, HUNTER, COVER, BOOT), side, depth slot,
   and **league rank at the position** (e.g. "#1 of 92 QB")
 - bio: height, weight, age, college, experience, draft (nflverse), handedness, archetype
@@ -65,8 +65,8 @@ nflverse teams_colors_logos.csv ─┘
   adds ids, headshot URL, draft info and team colours, and builds depth charts.
   Rebuild with `python3 tools/build_data.py path/to/new_ratings.xlsx` (needs pandas and openpyxl).
 - **Headshots → pixel art**, from the first source that works:
-  1. pre-baked `js/headshots.js`: run `python3 tools/bake_headshots.py` (Pillow) for offline use
-  2. live in the browser: face crop → 64×64 → vibrance boost → 40-colour k-means → 1px outline
+  1. pre-baked `js/headshots.js`: run `python3 tools/bake_headshots.py` (Pillow + numpy, about 0.1 s per player) for offline use
+  2. live in the browser, with the same steps as the bake script: face crop (found from the photo silhouette) → 80×80 → vibrance/contrast → 2× edge-preserving smoothing → 40-colour k-means → despeckle → 1px outline
   3. a team-colour helmet placeholder
 
 ## Files

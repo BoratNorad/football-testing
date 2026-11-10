@@ -260,7 +260,7 @@ def main():
             "div": t["team_division"] if t is not None else "",
             "c1": t["team_color"] if t is not None else "#444444",
             "c2": t["team_color2"] if t is not None else "#cccccc",
-            "c3": t["team_color3"] if t is not None else "#888888",
+            "c3": t["team_color3"] if t is not None and pd.notna(t["team_color3"]) else "#ffffff",
             "lineup": lineup,
             "ovr": round(sum(p["ovr"] for p in roster if p.get("starter") in lineup) /
                          max(1, len(lineup))),
