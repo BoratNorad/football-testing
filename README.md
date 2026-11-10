@@ -38,7 +38,7 @@ Keys: **UP/DOWN** browse, **LEFT/RIGHT** switch teams, **ESC** closes the abilit
 
 **Momentum meter:** 3 bars. Big plays (15+ yd gain, sack, takeaway, 3rd-down stop, TD) fill 1 bar.
 
-- 57 original abilities across QB, RB/FB, WR/TE, OL, DL, LB, DB and K/P/LS, each with its own 12×12 pixel icon.
+- 56 original abilities across QB, RB/FB, WR/TE, OL, DL, LB, DB and K/P/LS, each with its own 12×12 pixel icon.
 - Every player gets **1 passive and 1–2 actives**. Picks are based on what he is good at *compared with
   others at his position* (z-score), so the ability mix varies across the roster.
 - **Tier I / II / III** comes from his actual ratings, and effect sizes scale with the tier
