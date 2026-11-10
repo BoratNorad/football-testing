@@ -9,7 +9,7 @@ present; without it the browser pixelates headshots live instead.
 Usage:
     python3 tools/bake_headshots.py                 # all players
     python3 tools/bake_headshots.py --team BUF      # just one team
-    python3 tools/bake_headshots.py --size 40 --colors 16
+    python3 tools/bake_headshots.py --size 64 --colors 40
 
 Requires: Pillow   (pip install pillow)
 """
@@ -22,7 +22,7 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageEnhance
 
 ROOT = Path(__file__).resolve().parent.parent
 CACHE = ROOT / "data/headshot_cache"
@@ -43,8 +43,8 @@ def fetch(url, dest):
     return data
 
 
-def pixelate(raw, size=40, colors=16, outline=(16, 16, 24, 255)):
-    """Photo -> retro sprite: crop to the face, downscale, reduce palette, outline."""
+def pixelate(raw, size=64, colors=40, outline=(16, 16, 24, 255)):
+    """Photo -> 16-bit style portrait: crop to the face, downscale, boost, reduce palette, outline."""
     im = Image.open(io.BytesIO(raw)).convert("RGBA")
     w, h = im.size
     # NFL headshots are head-and-shoulders; keep a square biased to the top.
@@ -57,6 +57,8 @@ def pixelate(raw, size=40, colors=16, outline=(16, 16, 24, 255)):
     alpha = im.getchannel("A").point(lambda a: 255 if a >= 128 else 0)
     rgb = Image.new("RGB", im.size, (0, 0, 0))
     rgb.paste(im, mask=alpha)
+    rgb = ImageEnhance.Color(rgb).enhance(1.2)
+    rgb = ImageEnhance.Contrast(rgb).enhance(1.08)
     q = rgb.quantize(colors=colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
     out = q.convert("RGBA")
     out.putalpha(alpha)
@@ -81,8 +83,8 @@ def pixelate(raw, size=40, colors=16, outline=(16, 16, 24, 255)):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--size", type=int, default=40)
-    ap.add_argument("--colors", type=int, default=16)
+    ap.add_argument("--size", type=int, default=64)
+    ap.add_argument("--colors", type=int, default=40)
     ap.add_argument("--team", help="only bake one team (abbr, e.g. BUF)")
     ap.add_argument("--workers", type=int, default=8)
     args = ap.parse_args()

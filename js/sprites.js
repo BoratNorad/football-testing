@@ -32,6 +32,19 @@
   PLAYER_FRONT[5] = "...kHMMMMMMHk...";
   PLAYER_FRONT[6] = "....kkMMMMkk....";
 
+  // running frame: legs split
+  const runLegs = (map) => {
+    const m = map.slice();
+    m[17] = "...kPPk..kPPk...";
+    m[18] = "..kOOk....kOOk..";
+    m[19] = ".kBBBk....kOOk..";
+    m[20] = ".kkkk.....kBBBk.";
+    m[21] = "...........kkk..";
+    return m;
+  };
+  const PLAYER_BACK_RUN = runLegs(PLAYER_BACK);
+  const PLAYER_FRONT_RUN = runLegs(PLAYER_FRONT);
+
   const HELMET = [
     "...kkkkk....",
     "..kHHHHHkk..",
@@ -98,11 +111,26 @@
     }
   }
 
-  /** Draw a full player sprite (16x22 logical px). facing: 'back' | 'front' */
-  function drawPlayer(ctx, team, num, x, y, s = 1, facing = "back") {
+  /** Draw a full player sprite (16x22 logical px). facing: 'back' | 'front'; frame 0 stand, 1 run */
+  function drawPlayer(ctx, team, num, x, y, s = 1, facing = "back", frame = 0) {
     const pal = palette(team);
-    drawMap(ctx, facing === "back" ? PLAYER_BACK : PLAYER_FRONT, pal, x, y, s);
-    drawNumber(ctx, num, pal.N, x, y, s, facing === "back" ? 9 : 9);
+    const map = facing === "back" ? (frame ? PLAYER_BACK_RUN : PLAYER_BACK) : (frame ? PLAYER_FRONT_RUN : PLAYER_FRONT);
+    drawMap(ctx, map, pal, x, y, s);
+    drawNumber(ctx, num, pal.N, x, y, s, 9);
+  }
+
+  const spriteCache = new Map();
+  /** Cached canvas of a player sprite at scale s. */
+  function playerCanvas(team, num, s, facing, frame) {
+    const key = [team.abbr, team.c1, num, s, facing, frame].join("|");
+    let c = spriteCache.get(key);
+    if (!c) {
+      c = document.createElement("canvas");
+      c.width = 16 * s; c.height = 22 * s;
+      drawPlayer(c.getContext("2d"), team, num, 0, 0, s, facing, frame);
+      spriteCache.set(key, c);
+    }
+    return c;
   }
 
   function drawHelmet(ctx, team, x, y, s = 1) {
@@ -117,6 +145,6 @@
     return c;
   }
 
-  window.Sprites = { drawPlayer, drawHelmet, helmetCanvas, palette, luminance,
+  window.Sprites = { drawPlayer, playerCanvas, drawHelmet, helmetCanvas, palette, luminance,
     PLAYER_W: 16, PLAYER_H: 22 };
 })();

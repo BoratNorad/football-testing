@@ -24,9 +24,7 @@
 
     <div class="tabs" role="tablist">
       <button role="tab" class="tab active" data-view="dex">DEX</button>
-      <button role="tab" class="tab" data-view="field">STARTING 22</button>
-      <div class="spacer"></div>
-      <label class="toggle"><input type="checkbox" id="gbMode"> GB PALETTE</label>
+      <button role="tab" class="tab" data-view="depth">DEPTH CHART</button>
     </div>
 
     <main id="view-dex" class="view">
@@ -50,26 +48,33 @@
       <section class="screen detail-screen" id="detail"></section>
     </main>
 
-    <main id="view-field" class="view hidden">
-      <section class="screen field-screen">
-        <div class="field-head" id="fieldHead"></div>
-        <div class="field-wrap"><canvas id="field"></canvas></div>
-        <div class="field-hint">CLICK A PLAYER TO OPEN THEIR DEX ENTRY</div>
-        <div class="special" id="special"></div>
+    <main id="view-depth" class="view hidden">
+      <section class="screen depth-screen">
+        <div class="field-head" id="depthHead"></div>
+        <div id="depth"></div>
       </section>
     </main>
 
     <footer class="foot">
       Ratings: Madden NFL 27 spreadsheet · Headshots &amp; ids:
       <a href="https://github.com/nflverse/nflverse-data" target="_blank" rel="noopener">nflverse</a>
-      · UP/DOWN: browse · LEFT/RIGHT: switch team
+      · UP/DOWN: browse · LEFT/RIGHT: switch team · ESC: close
     </footer>
+  </div>
+
+  <div class="modal hidden" id="modal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      <div id="modalBody"></div>
+    </div>
   </div>
 
   <script src="js/data.js"></script>
   <script src="js/headshots.js"></script>
   <script src="js/sprites.js"></script>
   <script src="js/portrait.js"></script>
+  <script src="js/abilities.js"></script>
+  <script src="js/plays.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -5,11 +5,10 @@
 //   2. the player's nflverse headshot URL, pixelated live in the browser
 //   3. a procedural helmet placeholder in team colors
 (function () {
-  const SIZE = 40;          // logical pixels of a portrait
-  const COLORS = 16;        // palette size in "16-color" mode
-  const GB = [[15, 56, 15], [48, 98, 48], [139, 172, 15], [155, 188, 15]];
+  // 16-bit (SNES/Genesis era) look: 64x64, ~40 colours. Big enough that faces stay recognizable.
+  const SIZE = 64;          // logical pixels of a portrait
+  const COLORS = 40;        // palette size
   const cache = new Map();  // key -> Promise<HTMLCanvasElement>
-  let mode = "color";       // 'color' | 'gb'
 
   // ---- tiny loader queue so 1900 list rows don't fire 1900 requests at once ----
   const MAX = 6;
@@ -49,7 +48,7 @@
       cents.push([data[i], data[i + 1], data[i + 2]]);
     }
     const assign = new Int16Array(pts.length);
-    for (let iter = 0; iter < 8; iter++) {
+    for (let iter = 0; iter < 6; iter++) {
       const sum = cents.map(() => [0, 0, 0, 0]);
       for (let p = 0; p < pts.length; p++) {
         const i = pts[p];
@@ -70,12 +69,15 @@
     }
   }
 
-  function gameboy(data) {
+  // a touch of 16-bit vibrance: more contrast and saturation before the palette is reduced
+  function enhance(data) {
     for (let i = 0; i < data.length; i += 4) {
       if (data[i + 3] < 128) continue;
-      const l = (0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]) / 255;
-      const c = GB[Math.min(3, Math.floor(l * 4))];
-      data[i] = c[0]; data[i + 1] = c[1]; data[i + 2] = c[2];
+      let r = data[i], g = data[i + 1], b = data[i + 2];
+      const l = 0.299 * r + 0.587 * g + 0.114 * b;
+      r = l + (r - l) * 1.2; g = l + (g - l) * 1.2; b = l + (b - l) * 1.2;   // saturation
+      r = (r - 128) * 1.08 + 128; g = (g - 128) * 1.08 + 128; b = (b - 128) * 1.08 + 128; // contrast
+      data[i] = Math.max(0, Math.min(255, r)); data[i + 1] = Math.max(0, Math.min(255, g)); data[i + 2] = Math.max(0, Math.min(255, b));
     }
   }
 
@@ -129,7 +131,8 @@
     try { id = ctx.getImageData(0, 0, SIZE, SIZE); } catch (e) { return canvas; } // tainted: pixel grid only
     const d = id.data;
     for (let i = 3; i < d.length; i += 4) d[i] = d[i] >= 128 ? 255 : 0;
-    if (mode === "gb") gameboy(d); else quantize(d, COLORS);
+    enhance(d);
+    quantize(d, COLORS);
     outline(d, SIZE);
     ctx.putImageData(id, 0, 0);
     return canvas;
@@ -139,7 +142,7 @@
     const c = document.createElement("canvas");
     c.width = c.height = SIZE;
     const ctx = c.getContext("2d");
-    Sprites.drawHelmet(ctx, team, 2, 8, 3);
+    Sprites.drawHelmet(ctx, team, 8, 14, 4);
     c.dataset.placeholder = "1";
     return c;
   }
@@ -148,7 +151,7 @@
     const baked = window.DEX_HEADSHOTS && window.DEX_HEADSHOTS[player.id];
     if (baked) {
       const img = await loadImage(baked, false);
-      return mode === "gb" ? stylize(downscale(img, true)) : downscale(img, true);
+      return downscale(img, true);
     }
     if (!player.headshot) return placeholder(player, team);
     return enqueue(async () => {
@@ -168,7 +171,7 @@
 
   /** Returns a Promise of a SIZE x SIZE canvas. Callers should clone via copyTo. */
   function get(player, team) {
-    const key = player.id + ":" + mode;
+    const key = player.id;
     if (!cache.has(key)) cache.set(key, build(player, team));
     return cache.get(key);
   }
@@ -183,8 +186,5 @@
     target.classList.toggle("is-placeholder", !!src.dataset.placeholder);
   }
 
-  function setMode(m) { mode = m; }
-  function getMode() { return mode; }
-
-  window.Portrait = { get, paint, setMode, getMode, SIZE };
+  window.Portrait = { get, paint, SIZE };
 })();
