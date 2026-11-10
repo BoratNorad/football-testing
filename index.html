@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gridiron Dex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="device">
+    <header class="bezel">
+      <div class="lights">
+        <span class="lens"></span>
+        <span class="led red"></span><span class="led yellow"></span><span class="led green"></span>
+      </div>
+      <h1>GRIDIRON<span>DEX</span></h1>
+      <div class="source" id="source"></div>
+    </header>
+
+    <nav class="teams" id="teams" aria-label="Teams"></nav>
+
+    <div class="tabs" role="tablist">
+      <button role="tab" class="tab active" data-view="dex">DEX</button>
+      <button role="tab" class="tab" data-view="field">STARTING 22</button>
+      <div class="spacer"></div>
+      <label class="toggle"><input type="checkbox" id="gbMode"> GB PALETTE</label>
+    </div>
+
+    <main id="view-dex" class="view">
+      <section class="screen list-screen">
+        <div class="filters">
+          <input id="search" type="search" placeholder="SEARCH NAME..." autocomplete="off">
+          <select id="posFilter" aria-label="Position"></select>
+          <select id="sort" aria-label="Sort">
+            <option value="ovr">OVR</option>
+            <option value="dex">DEX NO.</option>
+            <option value="num">JERSEY</option>
+            <option value="name">NAME</option>
+            <option value="depth">DEPTH</option>
+          </select>
+          <label class="toggle small"><input type="checkbox" id="startersOnly"> STARTERS</label>
+        </div>
+        <div class="count" id="count"></div>
+        <ol class="dex-list" id="list"></ol>
+      </section>
+
+      <section class="screen detail-screen" id="detail"></section>
+    </main>
+
+    <main id="view-field" class="view hidden">
+      <section class="screen field-screen">
+        <div class="field-head" id="fieldHead"></div>
+        <div class="field-wrap"><canvas id="field"></canvas></div>
+        <div class="field-hint">CLICK A PLAYER TO OPEN THEIR DEX ENTRY</div>
+        <div class="special" id="special"></div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      Ratings: Madden NFL 27 spreadsheet · Headshots &amp; ids:
+      <a href="https://github.com/nflverse/nflverse-data" target="_blank" rel="noopener">nflverse</a>
+      · UP/DOWN: browse · LEFT/RIGHT: switch team
+    </footer>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/headshots.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/portrait.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
